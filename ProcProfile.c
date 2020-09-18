@@ -32,6 +32,7 @@ BOOL WINAPI breakHdl(DWORD dwCtrlType) {
 
 int main() {
 	/* Declare variables */
+	SYSTEM_INFO sysInfo;
 	LPTSTR cl,cm;
 	STARTUPINFO si;
 	PROCESS_MEMORY_COUNTERS mc;
@@ -57,6 +58,7 @@ int main() {
 		return 1;
 	}
 	/* Setup structures */
+	GetSystemInfo(&sysInfo);
 	GetStartupInfo(&si);
 	si.cb = sizeof(STARTUPINFO);
 	mc.cb = sizeof(PROCESS_MEMORY_COUNTERS);
@@ -132,7 +134,9 @@ int main() {
 		fprintf(stderr, "Paged Pool       : %18lld bytes\n", (ULONGLONG)mc.QuotaPeakPagedPoolUsage);
 		fprintf(stderr, "Nonpaged Pool    : %18lld bytes\n", (ULONGLONG)mc.QuotaPeakNonPagedPoolUsage);
 		fprintf(stderr, "Pagefile         : %18lld bytes\n", (ULONGLONG)mc.PeakPagefileUsage);
-		fprintf(stderr, "Page Fault Count : %d\n", mc.PageFaultCount);
+		fprintf(stderr, "Page Fault Count : %18lld\n", (ULONGLONG)mc.PageFaultCount);
+		fprintf(stderr, "Page Size:       : %18lld bytes\n", (ULONGLONG)sysInfo.dwPageSize);
+		fprintf(stderr, "Page Fault I/O   : %18lld bytes\n", (ULONGLONG)mc.PageFaultCount * sysInfo.dwPageSize);
 		fprintf(stderr, "\n");
 		fprintf(stderr, "IO Read          : %18lld bytes (in %15lld reads )\n", ic.ReadTransferCount, ic.ReadOperationCount);
 		fprintf(stderr, "IO Write         : %18lld bytes (in %15lld writes)\n", ic.WriteTransferCount, ic.WriteOperationCount);
@@ -147,7 +151,9 @@ int main() {
 		fprintf(stderr, "Paged Pool       : %15lld KB\n", (ULONGLONG)mc.QuotaPeakPagedPoolUsage>>10);
 		fprintf(stderr, "Nonpaged Pool    : %15lld KB\n", (ULONGLONG)mc.QuotaPeakNonPagedPoolUsage>>10);
 		fprintf(stderr, "Pagefile         : %15lld KB\n", (ULONGLONG)mc.PeakPagefileUsage>>10);
-		fprintf(stderr, "Page Fault Count : %d\n", mc.PageFaultCount);
+		fprintf(stderr, "Page Fault Count : %15lld\n", (ULONGLONG)mc.PageFaultCount);
+		fprintf(stderr, "Page Size:       : %15lld KB\n", (ULONGLONG)sysInfo.dwPageSize>>10);
+		fprintf(stderr, "Page Fault I/O   : %15lld KB\n", ((ULONGLONG)mc.PageFaultCount * sysInfo.dwPageSize)>>10);
 		fprintf(stderr, "\n");
 		fprintf(stderr, "IO Read          : %15lld KB (in %15lld reads )\n", ic.ReadTransferCount>>10, ic.ReadOperationCount);
 		fprintf(stderr, "IO Write         : %15lld KB (in %15lld writes)\n", ic.WriteTransferCount>>10, ic.WriteOperationCount);
